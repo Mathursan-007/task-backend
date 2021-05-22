@@ -1,17 +1,43 @@
-const Koa = require('koa');
+const Express = require('express');
 
 const CardRoutes = require('./routes/cardroute');
-const bodyParser = require('koa-bodyparser')
-const cors = require('@koa/cors')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const path = require('path')
 
-const app = new Koa();
-
-app.use(cors())
-app.use(bodyParser());
+const app = new Express();
 
 
-app.use(CardRoutes.routes())
-    .use(CardRoutes.allowedMethods())
+const whitelist = ['http://localhost:5000', 'http://localhost:8080', 'https://task-track-backend.herokuapp.com']
+const corsOptions = {
+    origin: function (origin, callback) {
+        console.log("** Origin of request " + origin)
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            console.log("Origin acceptable")
+            callback(null, true)
+        } else {
+            console.log("Origin rejected")
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
+
+app.use(cors(corsOptions))
+
+app.use(bodyParser.json());
+
+
+app.use("/card",CardRoutes)
+
+if (process.env.NODE_ENV === 'production') {
+    // Serve any static files
+    app.use(Express.static(path.join(__dirname, 'client/build')));
+// Handle React routing, return all requests to React app
+    app.get('*', function(req, res) {
+        res.sendFile(path.join(__dirname, 'task-frontend/build', 'index.html'));
+    });
+}
+
 
 
 const port = process.env.PORT || 5000;
