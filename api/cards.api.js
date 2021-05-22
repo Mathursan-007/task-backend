@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 
 let cards=new Map();
 let lists=new Map();
