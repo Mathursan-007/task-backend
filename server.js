@@ -8,7 +8,7 @@ const path = require('path')
 const app = new Express();
 
 
-const whitelist = ['http://localhost:3000']
+const whitelist = ['http://localhost:3000','https://task-track-frontend.herokuapp.com']
 const corsOptions = {
     origin: function (origin, callback) {
         console.log("** Origin of request " + origin)
