@@ -1,6 +1,7 @@
 const router =require('express').Router();
 const {addCard,getCards,addList,handleList} = require('../api/cards.api');
-
+const cloudinary = require('../utils/cloudinary');
+const upload = require('../utils/multer');
 
 router.get('/',(req,res)=>{
 
@@ -29,6 +30,20 @@ router.patch('/lists/:id',(req,res)=>{
     let id=req.params.id;
     let list=handleList(id,state);
     res.send(list);
+
+})
+
+router.post('/add',upload.single('File'),async (req,res)=>{
+
+    try{
+
+        let result = await cloudinary.uploader.upload(req.file.path,{ public_id: req.file.originalname,resource_type: "raw" });
+        console.log(result);
+
+    } catch (err) {
+        console.log(err);
+    }
+
 
 })
 
